@@ -1,0 +1,131 @@
+/* User Info Collector Form Styles */
+
+.uic-form-wrapper {
+    max-width: 600px;
+    margin: 20px 0;
+    padding: 20px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.uic-form {
+    margin: 0;
+}
+
+.uic-form-field {
+    margin-bottom: 20px;
+}
+
+.uic-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
+}
+
+.uic-required {
+    color: #d00;
+}
+
+.uic-optional {
+    font-weight: normal;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.uic-input,
+.uic-textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.uic-input:focus,
+.uic-textarea:focus {
+    outline: none;
+    border-color: #0073aa;
+}
+
+.uic-input-error {
+    border-color: #d00;
+}
+
+.uic-field-error {
+    display: block;
+    margin-top: 5px;
+    color: #d00;
+    font-size: 13px;
+}
+
+.uic-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.uic-submit-button {
+    padding: 12px 30px;
+    background: #0073aa;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.uic-submit-button:hover {
+    background: #005a87;
+}
+
+.uic-success-message {
+    padding: 15px;
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 5px;
+    color: #155724;
+    margin: 20px 0;
+}
+
+.uic-success-message p {
+    margin: 0;
+    font-weight: 600;
+}
+
+.uic-error-message {
+    padding: 15px;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    color: #721c24;
+    margin-bottom: 20px;
+}
+
+.uic-error-message p {
+    margin: 0 0 10px 0;
+}
+
+.uic-error-message ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.uic-error-message li {
+    margin: 5px 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .uic-form-wrapper {
+        padding: 15px;
+    }
+
+    .uic-submit-button {
+        width: 100%;
+    }
+}
