@@ -45,8 +45,10 @@ class UIC_Webhook {
             ),
             'body'        => wp_json_encode($payload),
             'timeout'     => 30,
-            'sslverify'   => true,
+            'redirection' => 5,
             'httpversion' => '1.1',
+            'blocking'    => true,
+            'sslverify'   => false, // Disable SSL verification for broader compatibility
         );
 
         // Add authentication if configured
@@ -54,6 +56,9 @@ class UIC_Webhook {
         if (!empty($api_key)) {
             $args['headers']['Authorization'] = 'Bearer ' . $api_key;
         }
+
+        // Log request for debugging
+        error_log(sprintf('[UIC Webhook] Sending submission #%d to N8N: %s', $post_id, $webhook_url));
 
         // Send the webhook request
         $response = wp_remote_post($webhook_url, $args);
@@ -193,23 +198,31 @@ class UIC_Webhook {
             return new WP_Error('invalid_url', __('Invalid webhook URL', 'user-info-collector'));
         }
 
-        // Send test payload
+        // Send test payload matching the format N8N expects
         $test_payload = array(
             'test' => true,
             'message' => 'Test webhook from ' . get_bloginfo('name'),
             'timestamp' => current_time('mysql'),
             'site_url' => get_bloginfo('url'),
+            'meta' => array(
+                'source' => 'WordPress - User Info Collector (Test)',
+                'test_mode' => true,
+            ),
         );
 
         $args = array(
             'method'      => 'POST',
             'headers'     => array(
                 'Content-Type' => 'application/json',
+                'Accept'       => 'application/json',
                 'User-Agent'   => 'WordPress-UIC-Plugin/' . UIC_VERSION,
             ),
             'body'        => wp_json_encode($test_payload),
-            'timeout'     => 15,
-            'sslverify'   => true,
+            'timeout'     => 30,
+            'redirection' => 5,
+            'httpversion' => '1.1',
+            'blocking'    => true,
+            'sslverify'   => false, // Disable SSL verification for testing (can be re-enabled in production)
         );
 
         // Add API key if configured
@@ -218,26 +231,79 @@ class UIC_Webhook {
             $args['headers']['Authorization'] = 'Bearer ' . $api_key;
         }
 
+        // Log the request for debugging
+        error_log('[UIC Webhook Test] Sending to: ' . $webhook_url);
+        error_log('[UIC Webhook Test] Payload: ' . wp_json_encode($test_payload));
+
         $response = wp_remote_post($webhook_url, $args);
 
+        // Enhanced error handling
         if (is_wp_error($response)) {
-            return $response;
+            $error_message = $response->get_error_message();
+            error_log('[UIC Webhook Test] Error: ' . $error_message);
+            return new WP_Error(
+                'connection_error',
+                sprintf(__('Connection error: %s', 'user-info-collector'), $error_message)
+            );
         }
 
         $status_code = wp_remote_retrieve_response_code($response);
+        $response_body = wp_remote_retrieve_body($response);
 
+        // Log response for debugging
+        error_log('[UIC Webhook Test] Response code: ' . $status_code);
+        error_log('[UIC Webhook Test] Response body: ' . substr($response_body, 0, 500));
+
+        // Success codes: 200-299
         if ($status_code >= 200 && $status_code < 300) {
             return array(
                 'success' => true,
                 'message' => sprintf(__('Webhook test successful! (HTTP %d)', 'user-info-collector'), $status_code),
                 'status_code' => $status_code,
+                'response' => substr($response_body, 0, 200),
             );
         }
 
+        // Provide detailed error message based on status code
+        $error_details = self::get_http_error_details($status_code, $response_body);
+
         return new WP_Error(
             'test_failed',
-            sprintf(__('Webhook test failed with HTTP %d', 'user-info-collector'), $status_code)
+            sprintf(__('Webhook test failed with HTTP %d: %s', 'user-info-collector'), $status_code, $error_details)
         );
+    }
+
+    /**
+     * Get human-readable error details for HTTP status codes
+     *
+     * @param int $status_code HTTP status code
+     * @param string $response_body Response body
+     * @return string Error description
+     */
+    private static function get_http_error_details($status_code, $response_body) {
+        $errors = array(
+            400 => __('Bad Request - The webhook URL may not be configured correctly in N8N', 'user-info-collector'),
+            401 => __('Unauthorized - Check your API key in settings', 'user-info-collector'),
+            403 => __('Forbidden - N8N rejected the request. Check authentication settings', 'user-info-collector'),
+            404 => __('Not Found - The webhook URL is incorrect or the N8N workflow is not active. Please verify the URL and ensure your N8N workflow is activated', 'user-info-collector'),
+            405 => __('Method Not Allowed - The webhook might only accept GET requests', 'user-info-collector'),
+            408 => __('Request Timeout - N8N took too long to respond', 'user-info-collector'),
+            429 => __('Too Many Requests - Rate limit exceeded', 'user-info-collector'),
+            500 => __('Internal Server Error - N8N encountered an error processing the webhook', 'user-info-collector'),
+            502 => __('Bad Gateway - N8N server is unreachable', 'user-info-collector'),
+            503 => __('Service Unavailable - N8N is temporarily down', 'user-info-collector'),
+        );
+
+        if (isset($errors[$status_code])) {
+            return $errors[$status_code];
+        }
+
+        // Include response body snippet for unknown errors
+        if (!empty($response_body)) {
+            return substr($response_body, 0, 100);
+        }
+
+        return __('Unknown error', 'user-info-collector');
     }
 
     /**

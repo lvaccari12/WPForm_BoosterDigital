@@ -262,6 +262,16 @@ class UIC_Admin {
                     </button>
                 </p>
             </form>
+
+            <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; margin-top: 20px;">
+                <h3 style="margin-top: 0;"><?php esc_html_e('⚠️ Common Issues:', 'user-info-collector'); ?></h3>
+                <ul style="margin-bottom: 0;">
+                    <li><strong><?php esc_html_e('HTTP 404 Error?', 'user-info-collector'); ?></strong> <?php esc_html_e('Make sure your N8N workflow is ACTIVE (not paused) and the webhook URL is copied exactly from N8N.', 'user-info-collector'); ?></li>
+                    <li><strong><?php esc_html_e('Check Debug Log:', 'user-info-collector'); ?></strong> <?php esc_html_e('Enable WordPress debug logging to see detailed webhook information. Check', 'user-info-collector'); ?> <code>wp-content/debug.log</code></li>
+                    <li><strong><?php esc_html_e('N8N Cloud vs Self-hosted:', 'user-info-collector'); ?></strong> <?php esc_html_e('Cloud URLs look like', 'user-info-collector'); ?> <code>https://yourinstance.app.n8n.cloud/webhook/...</code></li>
+                    <li><strong><?php esc_html_e('Test in N8N first:', 'user-info-collector'); ?></strong> <?php esc_html_e('Use the "Test URL" button in N8N webhook node to verify it works', 'user-info-collector'); ?></li>
+                </ul>
+            </div>
             <?php endif; ?>
 
             <hr />
