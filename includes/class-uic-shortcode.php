@@ -85,6 +85,9 @@ class UIC_Shortcode {
             // Send email notification
             UIC_Email::send_notification($submitted_data, $post_id);
 
+            // Send to N8N webhook
+            UIC_Webhook::send_to_n8n($submitted_data, $post_id);
+
             // Redirect with success parameter
             $redirect_url = add_query_arg('uic_success', '1', $redirect_url);
             wp_safe_redirect($redirect_url);

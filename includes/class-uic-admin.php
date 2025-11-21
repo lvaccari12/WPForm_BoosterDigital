@@ -110,14 +110,40 @@ class UIC_Admin {
             $email_notifications = isset($_POST['uic_email_notifications']) ? 'yes' : 'no';
             $notification_email = sanitize_email($_POST['uic_notification_email']);
 
+            // N8N Webhook settings
+            $webhook_enabled = isset($_POST['uic_n8n_webhook_enabled']) ? true : false;
+            $webhook_url = esc_url_raw($_POST['uic_n8n_webhook_url']);
+            $api_key = sanitize_text_field($_POST['uic_n8n_api_key']);
+
             update_option('uic_email_notifications', $email_notifications);
             update_option('uic_notification_email', $notification_email);
+            update_option('uic_n8n_webhook_enabled', $webhook_enabled);
+            update_option('uic_n8n_webhook_url', $webhook_url);
+
+            // Only update API key if it's not empty (allows keeping existing key)
+            if (!empty($api_key)) {
+                update_option('uic_n8n_api_key', $api_key);
+            }
 
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Settings saved successfully.', 'user-info-collector') . '</p></div>';
         }
 
+        // Handle webhook test
+        if (isset($_POST['uic_test_webhook']) && check_admin_referer('uic_test_webhook', 'uic_test_webhook_nonce')) {
+            $test_result = UIC_Webhook::test_webhook();
+
+            if (is_wp_error($test_result)) {
+                echo '<div class="notice notice-error is-dismissible"><p><strong>' . esc_html__('Webhook Test Failed:', 'user-info-collector') . '</strong> ' . esc_html($test_result->get_error_message()) . '</p></div>';
+            } else {
+                echo '<div class="notice notice-success is-dismissible"><p>' . esc_html($test_result['message']) . '</p></div>';
+            }
+        }
+
         $email_notifications = get_option('uic_email_notifications', 'yes');
         $notification_email = get_option('uic_notification_email', get_option('admin_email'));
+        $webhook_enabled = get_option('uic_n8n_webhook_enabled', false);
+        $webhook_url = get_option('uic_n8n_webhook_url', '');
+        $api_key = get_option('uic_n8n_api_key', '');
 
         ?>
         <div class="wrap">
@@ -160,6 +186,61 @@ class UIC_Admin {
                     </tr>
                 </table>
 
+                <h2><?php esc_html_e('N8N Webhook Integration', 'user-info-collector'); ?></h2>
+                <p><?php esc_html_e('Send form submissions to N8N automation platform via webhook.', 'user-info-collector'); ?></p>
+
+                <table class="form-table">
+                    <tr>
+                        <th scope="row">
+                            <label for="uic_n8n_webhook_enabled"><?php esc_html_e('Enable N8N Webhook', 'user-info-collector'); ?></label>
+                        </th>
+                        <td>
+                            <input type="checkbox"
+                                   id="uic_n8n_webhook_enabled"
+                                   name="uic_n8n_webhook_enabled"
+                                   value="1"
+                                   <?php checked($webhook_enabled, true); ?> />
+                            <label for="uic_n8n_webhook_enabled">
+                                <?php esc_html_e('Send form data to N8N on each submission', 'user-info-collector'); ?>
+                            </label>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">
+                            <label for="uic_n8n_webhook_url"><?php esc_html_e('N8N Webhook URL', 'user-info-collector'); ?> <span style="color: red;">*</span></label>
+                        </th>
+                        <td>
+                            <input type="url"
+                                   id="uic_n8n_webhook_url"
+                                   name="uic_n8n_webhook_url"
+                                   value="<?php echo esc_attr($webhook_url); ?>"
+                                   class="regular-text"
+                                   placeholder="https://your-n8n-instance.app/webhook/..." />
+                            <p class="description">
+                                <?php esc_html_e('Get this URL from your N8N webhook trigger node', 'user-info-collector'); ?>
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">
+                            <label for="uic_n8n_api_key"><?php esc_html_e('API Key (Optional)', 'user-info-collector'); ?></label>
+                        </th>
+                        <td>
+                            <input type="password"
+                                   id="uic_n8n_api_key"
+                                   name="uic_n8n_api_key"
+                                   value="<?php echo !empty($api_key) ? '********' : ''; ?>"
+                                   class="regular-text"
+                                   placeholder="<?php esc_attr_e('Enter API key if required', 'user-info-collector'); ?>" />
+                            <p class="description">
+                                <?php esc_html_e('Optional: Bearer token for webhook authentication. Leave blank if not needed.', 'user-info-collector'); ?>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+
                 <p class="submit">
                     <button type="submit" name="uic_save_settings" class="button button-primary">
                         <?php esc_html_e('Save Settings', 'user-info-collector'); ?>
@@ -167,11 +248,53 @@ class UIC_Admin {
                 </p>
             </form>
 
+            <!-- Webhook Test Form -->
+            <?php if (!empty($webhook_url)): ?>
+            <hr />
+            <h2><?php esc_html_e('Test Webhook', 'user-info-collector'); ?></h2>
+            <p><?php esc_html_e('Send a test request to verify your N8N webhook is working correctly.', 'user-info-collector'); ?></p>
+
+            <form method="post" action="">
+                <?php wp_nonce_field('uic_test_webhook', 'uic_test_webhook_nonce'); ?>
+                <p class="submit">
+                    <button type="submit" name="uic_test_webhook" class="button button-secondary">
+                        <?php esc_html_e('Test N8N Webhook', 'user-info-collector'); ?>
+                    </button>
+                </p>
+            </form>
+            <?php endif; ?>
+
             <hr />
 
             <h2><?php esc_html_e('Shortcode Usage', 'user-info-collector'); ?></h2>
             <p><?php esc_html_e('Use the following shortcode to display the form on any page or post:', 'user-info-collector'); ?></p>
             <code>[user_info_form]</code>
+
+            <hr />
+
+            <h2><?php esc_html_e('Webhook Payload Example', 'user-info-collector'); ?></h2>
+            <p><?php esc_html_e('Your N8N workflow will receive data in this format:', 'user-info-collector'); ?></p>
+            <pre style="background: #f5f5f5; padding: 15px; border: 1px solid #ddd; overflow-x: auto;">
+{
+  "meta": {
+    "source": "WordPress - User Info Collector",
+    "plugin_version": "1.0.0",
+    "site_url": "<?php echo esc_js(get_bloginfo('url')); ?>",
+    "site_name": "<?php echo esc_js(get_bloginfo('name')); ?>",
+    "timestamp": "2025-01-19 10:30:00",
+    "post_id": 123
+  },
+  "data": {
+    "full_name": "John Doe",
+    "telephone": "+1 (555) 123-4567",
+    "email": "john@example.com",
+    "description": "Sample form submission"
+  },
+  "event": {
+    "type": "form_submission",
+    "id": "uic_64f3b2a1c9e5d"
+  }
+}</pre>
         </div>
         <?php
     }

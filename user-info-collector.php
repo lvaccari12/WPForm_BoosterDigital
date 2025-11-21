@@ -63,6 +63,7 @@ class User_Info_Collector {
         require_once UIC_PLUGIN_DIR . 'includes/class-uic-shortcode.php';
         require_once UIC_PLUGIN_DIR . 'includes/class-uic-admin.php';
         require_once UIC_PLUGIN_DIR . 'includes/class-uic-email.php';
+        require_once UIC_PLUGIN_DIR . 'includes/class-uic-webhook.php';
     }
 
     /**

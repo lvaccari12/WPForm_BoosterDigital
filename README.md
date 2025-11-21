@@ -27,6 +27,13 @@ A secure, professional WordPress plugin to collect user information via a front-
 - Enable/disable notifications via settings
 - Detailed submission information in emails
 
+✅ **N8N Webhook Integration**
+- Send form data to N8N automation platform in real-time
+- Connect to 400+ apps (Google Sheets, Slack, CRM, etc.)
+- Secure webhook delivery with optional API authentication
+- Built-in test function to verify connectivity
+- Automatic retry logic and error logging
+
 ✅ **Modern WordPress Standards**
 - Compatible with WordPress 6.x and PHP 7.4+
 - Uses Custom Post Type for data storage
@@ -143,6 +150,116 @@ Submitted on: January 19, 2025 10:30 AM
 View submission in admin:
 https://yoursite.com/wp-admin/admin.php?page=uic-submissions
 ```
+
+### Configure N8N Webhook Integration
+
+Send form submissions to N8N automation platform in real-time!
+
+#### What is N8N?
+
+N8N is a powerful workflow automation tool that lets you connect your WordPress form to hundreds of apps and services like:
+- Google Sheets
+- Slack notifications
+- CRM systems (Salesforce, HubSpot)
+- Email marketing (Mailchimp, SendGrid)
+- Databases (PostgreSQL, MySQL, MongoDB)
+- And 400+ more integrations
+
+#### Setup Steps
+
+**1. Create N8N Webhook**
+
+1. Log in to your N8N instance (Cloud or Self-hosted)
+2. Create a new workflow
+3. Add a **Webhook** trigger node
+4. Select **POST** method
+5. Copy the webhook URL (e.g., `https://your-n8n.app/webhook/abc123xyz`)
+
+**2. Configure WordPress Plugin**
+
+1. Go to **WordPress Admin → User Info → Settings**
+2. Scroll to **N8N Webhook Integration** section
+3. Check **"Enable N8N Webhook"**
+4. Paste your N8N webhook URL
+5. (Optional) Add API key if your N8N webhook requires authentication
+6. Click **"Save Settings"**
+
+**3. Test the Connection**
+
+1. After saving, click **"Test N8N Webhook"** button
+2. Check your N8N workflow - you should see the test payload arrive
+3. If successful, you'll see: "Webhook test successful! (HTTP 200)"
+
+**4. Process Form Data in N8N**
+
+The webhook sends data in JSON format:
+
+```json
+{
+  "meta": {
+    "source": "WordPress - User Info Collector",
+    "plugin_version": "1.0.0",
+    "site_url": "https://yoursite.com",
+    "site_name": "Your Site Name",
+    "timestamp": "2025-01-19 10:30:00",
+    "post_id": 123
+  },
+  "data": {
+    "full_name": "John Doe",
+    "telephone": "+1 (555) 123-4567",
+    "email": "john@example.com",
+    "description": "Sample form submission"
+  },
+  "event": {
+    "type": "form_submission",
+    "id": "uic_64f3b2a1c9e5d"
+  }
+}
+```
+
+#### Example N8N Workflows
+
+**Example 1: Save to Google Sheets**
+1. Webhook trigger (receives form data)
+2. Google Sheets node (adds row with name, email, phone)
+
+**Example 2: Send Slack Notification**
+1. Webhook trigger
+2. Slack node (sends message: "New form: {{ $json.data.full_name }}")
+
+**Example 3: Add to CRM**
+1. Webhook trigger
+2. HubSpot/Salesforce node (creates new contact)
+
+#### Troubleshooting
+
+**Webhook Not Receiving Data?**
+- Check the webhook URL is correct
+- Verify N8N workflow is active (not paused)
+- Check WordPress error logs: `wp-content/debug.log`
+- Test the webhook using the "Test N8N Webhook" button
+
+**Authentication Errors?**
+- If your N8N instance requires authentication, add the API key in settings
+- The plugin sends it as: `Authorization: Bearer YOUR_KEY`
+
+**Timeout Issues?**
+- Default timeout is 30 seconds
+- For self-hosted N8N, ensure it's accessible from your WordPress server
+- Check firewalls and network settings
+
+#### Webhook Metadata
+
+Each submission stores webhook status:
+- Webhook status (sent/failed)
+- Sent timestamp
+- HTTP response code
+- Error messages (if failed)
+
+View this in the submission details or check post meta:
+- `_uic_webhook_status`
+- `_uic_webhook_sent_at`
+- `_uic_webhook_response_code`
 
 ## Security Features
 
