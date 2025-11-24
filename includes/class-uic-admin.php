@@ -110,14 +110,33 @@ class UIC_Admin {
             $email_notifications = isset($_POST['uic_email_notifications']) ? 'yes' : 'no';
             $notification_email = sanitize_email($_POST['uic_notification_email']);
 
+            // Webhook settings
+            $webhook_enabled = isset($_POST['uic_webhook_enabled']) ? true : false;
+            $webhook_url = esc_url_raw($_POST['uic_webhook_url']);
+
             update_option('uic_email_notifications', $email_notifications);
             update_option('uic_notification_email', $notification_email);
+            update_option('uic_webhook_enabled', $webhook_enabled);
+            update_option('uic_webhook_url', $webhook_url);
 
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Settings saved successfully.', 'user-info-collector') . '</p></div>';
         }
 
+        // Handle webhook test
+        if (isset($_POST['uic_test_webhook']) && check_admin_referer('uic_test_webhook', 'uic_test_webhook_nonce')) {
+            $result = UIC_Webhook::test();
+
+            if (is_wp_error($result)) {
+                echo '<div class="notice notice-error is-dismissible"><p><strong>Webhook Test Failed:</strong> ' . esc_html($result->get_error_message()) . '</p></div>';
+            } else {
+                echo '<div class="notice notice-success is-dismissible"><p>' . esc_html($result['message']) . '</p></div>';
+            }
+        }
+
         $email_notifications = get_option('uic_email_notifications', 'yes');
         $notification_email = get_option('uic_notification_email', get_option('admin_email'));
+        $webhook_enabled = get_option('uic_webhook_enabled', false);
+        $webhook_url = get_option('uic_webhook_url', '');
 
         ?>
         <div class="wrap">
@@ -160,12 +179,65 @@ class UIC_Admin {
                     </tr>
                 </table>
 
+                <h2><?php esc_html_e('Webhook Integration', 'user-info-collector'); ?></h2>
+                <p><?php esc_html_e('Send form submissions to external services in real-time.', 'user-info-collector'); ?></p>
+
+                <table class="form-table">
+                    <tr>
+                        <th scope="row">
+                            <label for="uic_webhook_enabled"><?php esc_html_e('Enable Webhook', 'user-info-collector'); ?></label>
+                        </th>
+                        <td>
+                            <input type="checkbox"
+                                   id="uic_webhook_enabled"
+                                   name="uic_webhook_enabled"
+                                   value="1"
+                                   <?php checked($webhook_enabled, true); ?> />
+                            <label for="uic_webhook_enabled">
+                                <?php esc_html_e('Send data to webhook URL on each submission', 'user-info-collector'); ?>
+                            </label>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">
+                            <label for="uic_webhook_url"><?php esc_html_e('Webhook URL', 'user-info-collector'); ?></label>
+                        </th>
+                        <td>
+                            <input type="url"
+                                   id="uic_webhook_url"
+                                   name="uic_webhook_url"
+                                   value="<?php echo esc_attr($webhook_url); ?>"
+                                   class="regular-text"
+                                   placeholder="https://your-service.com/webhook" />
+                            <p class="description">
+                                <?php esc_html_e('Enter the URL where form data should be sent', 'user-info-collector'); ?>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+
                 <p class="submit">
                     <button type="submit" name="uic_save_settings" class="button button-primary">
                         <?php esc_html_e('Save Settings', 'user-info-collector'); ?>
                     </button>
                 </p>
             </form>
+
+            <?php if (!empty($webhook_url)): ?>
+            <hr />
+            <h2><?php esc_html_e('Test Webhook', 'user-info-collector'); ?></h2>
+            <p><?php esc_html_e('Send a test request to verify your webhook is working.', 'user-info-collector'); ?></p>
+
+            <form method="post" action="">
+                <?php wp_nonce_field('uic_test_webhook', 'uic_test_webhook_nonce'); ?>
+                <p class="submit">
+                    <button type="submit" name="uic_test_webhook" class="button button-secondary">
+                        <?php esc_html_e('Test Webhook', 'user-info-collector'); ?>
+                    </button>
+                </p>
+            </form>
+            <?php endif; ?>
 
             <hr />
 
