@@ -71,6 +71,7 @@ class UIC_Admin {
                             <th><?php esc_html_e('Full Name', 'user-info-collector'); ?></th>
                             <th><?php esc_html_e('Telephone', 'user-info-collector'); ?></th>
                             <th><?php esc_html_e('Email', 'user-info-collector'); ?></th>
+                            <th><?php esc_html_e('Business Niche', 'user-info-collector'); ?></th>
                             <th><?php esc_html_e('Description', 'user-info-collector'); ?></th>
                             <th><?php esc_html_e('Date Submitted', 'user-info-collector'); ?></th>
                             <th><?php esc_html_e('Actions', 'user-info-collector'); ?></th>
@@ -83,6 +84,7 @@ class UIC_Admin {
                                 <td><strong><?php echo esc_html($submission['full_name']); ?></strong></td>
                                 <td><?php echo esc_html($submission['telephone']); ?></td>
                                 <td><a href="mailto:<?php echo esc_attr($submission['email']); ?>"><?php echo esc_html($submission['email']); ?></a></td>
+                                <td><?php echo esc_html($submission['business_niche']); ?></td>
                                 <td><?php echo esc_html(wp_trim_words($submission['description'], 10, '...')); ?></td>
                                 <td><?php echo esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format'), strtotime($submission['date']))); ?></td>
                                 <td>

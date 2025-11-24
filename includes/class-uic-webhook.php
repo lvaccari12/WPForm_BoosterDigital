@@ -46,6 +46,7 @@ class UIC_Webhook {
                 'full_name' => sanitize_text_field($form_data['full_name']),
                 'telephone' => sanitize_text_field($form_data['telephone']),
                 'email' => sanitize_email($form_data['email']),
+                'business_niche' => sanitize_text_field($form_data['business_niche']),
                 'description' => sanitize_textarea_field($form_data['description']),
             ),
         );

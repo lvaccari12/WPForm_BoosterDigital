@@ -46,6 +46,12 @@
     transition: border-color 0.3s ease;
 }
 
+select.uic-input {
+    background: #fff;
+    cursor: pointer;
+    appearance: auto;
+}
+
 .uic-input:focus,
 .uic-textarea:focus {
     outline: none;

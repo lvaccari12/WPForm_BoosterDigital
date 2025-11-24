@@ -42,10 +42,11 @@ class UIC_Shortcode {
 
         // Get and sanitize form data
         $submitted_data = array(
-            'full_name'   => isset($_POST['uic_full_name']) ? sanitize_text_field($_POST['uic_full_name']) : '',
-            'telephone'   => isset($_POST['uic_telephone']) ? sanitize_text_field($_POST['uic_telephone']) : '',
-            'email'       => isset($_POST['uic_email']) ? sanitize_email($_POST['uic_email']) : '',
-            'description' => isset($_POST['uic_description']) ? sanitize_textarea_field($_POST['uic_description']) : '',
+            'full_name'      => isset($_POST['uic_full_name']) ? sanitize_text_field($_POST['uic_full_name']) : '',
+            'telephone'      => isset($_POST['uic_telephone']) ? sanitize_text_field($_POST['uic_telephone']) : '',
+            'email'          => isset($_POST['uic_email']) ? sanitize_email($_POST['uic_email']) : '',
+            'business_niche' => isset($_POST['uic_business_niche']) ? sanitize_text_field($_POST['uic_business_niche']) : '',
+            'description'    => isset($_POST['uic_description']) ? sanitize_textarea_field($_POST['uic_description']) : '',
         );
 
         // Validate form data
@@ -101,6 +102,39 @@ class UIC_Shortcode {
     }
 
     /**
+     * Get available business niches
+     */
+    private function get_business_niches() {
+        return array(
+            'Real estate agents & property managers',
+            'Home cleaning services',
+            'Landscaping & lawn care',
+            'Plumbing services',
+            'Electrical services',
+            'HVAC (heating, ventilation, air conditioning)',
+            'Roofing & construction',
+            'Hair salons & barbers',
+            'Spas & massage therapists',
+            'Personal trainers & fitness coaches',
+            'Estheticians & skincare clinics',
+            'Life coaches',
+            'Mental health therapists or counselors',
+            'Accounting & bookkeeping',
+            'Marketing agencies',
+            'Web design & development',
+            'Social media management',
+            'Business consultants',
+            'Legal services & law firms',
+            'Virtual assistants',
+            'Dog grooming',
+            'Pet boarding & daycare',
+            'Event planners',
+            'Photographers & videographers',
+            'Movers & storage services',
+        );
+    }
+
+    /**
      * Validate form data
      * Returns array of errors (empty if validation passes)
      */
@@ -126,6 +160,14 @@ class UIC_Shortcode {
             $errors['email'] = __('Email is required.', 'user-info-collector');
         } elseif (!is_email($email)) {
             $errors['email'] = __('Please enter a valid email address.', 'user-info-collector');
+        }
+
+        // Validate business niche
+        $business_niche = trim($data['business_niche']);
+        if (empty($business_niche)) {
+            $errors['business_niche'] = __('Business Niche is required.', 'user-info-collector');
+        } elseif (!in_array($business_niche, $this->get_business_niches(), true)) {
+            $errors['business_niche'] = __('Please select a valid business niche.', 'user-info-collector');
         }
 
         return $errors;
@@ -271,6 +313,33 @@ class UIC_Shortcode {
                     />
                     <?php if (isset($errors['email'])): ?>
                         <span class="uic-field-error"><?php echo esc_html($errors['email']); ?></span>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Business Niche Field -->
+                <div class="uic-form-field">
+                    <label for="uic_business_niche" class="uic-label">
+                        <?php esc_html_e('Business Niche', 'user-info-collector'); ?> <span class="uic-required">*</span>
+                    </label>
+                    <select
+                        id="uic_business_niche"
+                        name="uic_business_niche"
+                        class="uic-input <?php echo isset($errors['business_niche']) ? 'uic-input-error' : ''; ?>"
+                        required
+                    >
+                        <option value=""><?php esc_html_e('Select your business niche', 'user-info-collector'); ?></option>
+                        <?php
+                        $niches = $this->get_business_niches();
+                        $selected_niche = isset($submitted_data['business_niche']) ? $submitted_data['business_niche'] : '';
+                        foreach ($niches as $niche):
+                        ?>
+                            <option value="<?php echo esc_attr($niche); ?>" <?php selected($selected_niche, $niche); ?>>
+                                <?php echo esc_html($niche); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <?php if (isset($errors['business_niche'])): ?>
+                        <span class="uic-field-error"><?php echo esc_html($errors['business_niche']); ?></span>
                     <?php endif; ?>
                 </div>
 
