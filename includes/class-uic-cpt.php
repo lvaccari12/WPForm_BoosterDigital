@@ -72,7 +72,6 @@ class UIC_CPT {
         $telephone = sanitize_text_field($data['telephone']);
         $email = sanitize_email($data['email']);
         $business_niche = sanitize_text_field($data['business_niche']);
-        $description = sanitize_textarea_field($data['description']);
 
         // Create post
         $post_id = wp_insert_post(array(
@@ -95,7 +94,6 @@ class UIC_CPT {
         update_post_meta($post_id, '_uic_telephone', $telephone);
         update_post_meta($post_id, '_uic_email', $email);
         update_post_meta($post_id, '_uic_business_niche', $business_niche);
-        update_post_meta($post_id, '_uic_description', $description);
         update_post_meta($post_id, '_uic_submission_date', current_time('mysql'));
 
         return $post_id;
@@ -115,7 +113,6 @@ class UIC_CPT {
             'telephone'      => get_post_meta($post_id, '_uic_telephone', true),
             'email'          => get_post_meta($post_id, '_uic_email', true),
             'business_niche' => get_post_meta($post_id, '_uic_business_niche', true),
-            'description'    => get_post_meta($post_id, '_uic_description', true),
             'date'           => get_post_meta($post_id, '_uic_submission_date', true),
         );
     }

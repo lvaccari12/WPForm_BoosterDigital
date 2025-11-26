@@ -40,15 +40,13 @@ class UIC_Email {
             __('Full Name:', 'user-info-collector') . " %s\n" .
             __('Telephone:', 'user-info-collector') . " %s\n" .
             __('Email:', 'user-info-collector') . " %s\n" .
-            __('Business Niche:', 'user-info-collector') . " %s\n" .
-            __('Description:', 'user-info-collector') . "\n%s\n\n" .
+            __('Business Niche:', 'user-info-collector') . " %s\n\n" .
             __('Submitted on:', 'user-info-collector') . " %s\n\n" .
             __('View submission in admin:', 'user-info-collector') . "\n%s",
             sanitize_text_field($data['full_name']),
             sanitize_text_field($data['telephone']),
             sanitize_email($data['email']),
             sanitize_text_field($data['business_niche']),
-            sanitize_textarea_field($data['description']),
             current_time(get_option('date_format') . ' ' . get_option('time_format')),
             admin_url('admin.php?page=uic-submissions')
         );

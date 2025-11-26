@@ -46,7 +46,6 @@ class UIC_Shortcode {
             'telephone'      => isset($_POST['uic_telephone']) ? sanitize_text_field($_POST['uic_telephone']) : '',
             'email'          => isset($_POST['uic_email']) ? sanitize_email($_POST['uic_email']) : '',
             'business_niche' => isset($_POST['uic_business_niche']) ? sanitize_text_field($_POST['uic_business_niche']) : '',
-            'description'    => isset($_POST['uic_description']) ? sanitize_textarea_field($_POST['uic_description']) : '',
         );
 
         // Validate form data
@@ -107,10 +106,6 @@ class UIC_Shortcode {
     private function get_business_niches() {
         return array(
             'Real Estate Agents & Property Managers',
-            'Medical & Wellness Professionals',
-            'Legal Services & Law Firms',
-            'Home Improvement Contractors',
-            'Hair salons & barbers',
         );
     }
 
@@ -321,20 +316,6 @@ class UIC_Shortcode {
                     <?php if (isset($errors['business_niche'])): ?>
                         <span class="uic-field-error"><?php echo esc_html($errors['business_niche']); ?></span>
                     <?php endif; ?>
-                </div>
-
-                <!-- Description Field -->
-                <div class="uic-form-field">
-                    <label for="uic_description" class="uic-label">
-                        <?php esc_html_e('Description', 'user-info-collector'); ?> <span class="uic-optional"><?php esc_html_e('(Optional)', 'user-info-collector'); ?></span>
-                    </label>
-                    <textarea
-                        id="uic_description"
-                        name="uic_description"
-                        class="uic-textarea"
-                        rows="5"
-                        placeholder="<?php esc_attr_e('Enter additional information', 'user-info-collector'); ?>"
-                    ><?php echo isset($submitted_data['description']) ? esc_textarea($submitted_data['description']) : ''; ?></textarea>
                 </div>
 
                 <!-- Submit Button -->
