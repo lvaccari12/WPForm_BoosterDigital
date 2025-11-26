@@ -106,31 +106,11 @@ class UIC_Shortcode {
      */
     private function get_business_niches() {
         return array(
-            'Real estate agents & property managers',
-            'Home cleaning services',
-            'Landscaping & lawn care',
-            'Plumbing services',
-            'Electrical services',
-            'HVAC (heating, ventilation, air conditioning)',
-            'Roofing & construction',
+            'Real Estate Agents & Property Managers',
+            'Medical & Wellness Professionals',
+            'Legal Services & Law Firms',
+            'Home Improvement Contractors',
             'Hair salons & barbers',
-            'Spas & massage therapists',
-            'Personal trainers & fitness coaches',
-            'Estheticians & skincare clinics',
-            'Life coaches',
-            'Mental health therapists or counselors',
-            'Accounting & bookkeeping',
-            'Marketing agencies',
-            'Web design & development',
-            'Social media management',
-            'Business consultants',
-            'Legal services & law firms',
-            'Virtual assistants',
-            'Dog grooming',
-            'Pet boarding & daycare',
-            'Event planners',
-            'Photographers & videographers',
-            'Movers & storage services',
         );
     }
 
