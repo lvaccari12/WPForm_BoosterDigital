@@ -1,19 +1,32 @@
 /* User Info Collector Form Styles */
 
+/* Reset Elementor interference */
+.elementor-widget-shortcode .elementor-shortcode {
+    all: initial !important;
+    display: block !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif !important;
+}
+
+/* Elementor compatibility - increase specificity */
+.elementor-shortcode .uic-form-wrapper,
 .uic-form-wrapper {
-    max-width: 400px;
-    margin: 40px auto;
-    padding: 0;
-    background: transparent;
-    border: none;
+    max-width: 400px !important;
+    margin: 40px auto !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
+.elementor-shortcode .uic-form,
 .uic-form {
-    margin: 0;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
+.elementor-shortcode .uic-form-field,
 .uic-form-field {
-    margin-bottom: 16px;
+    margin-bottom: 16px !important;
 }
 
 .uic-label {
@@ -30,17 +43,21 @@
     font-size: 0.9em;
 }
 
+.elementor-shortcode .uic-input,
+.elementor-shortcode .uic-textarea,
 .uic-input,
 .uic-textarea {
-    width: 100%;
+    width: 100% !important;
     padding: 18px 20px;
-    border: 1px solid #000;
-    border-radius: 12px;
-    font-size: 15px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    box-sizing: border-box;
-    transition: all 0.2s ease;
-    background: #fff;
+    border: 1px solid #000 !important;
+    border-radius: 12px !important;
+    font-size: 15px !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif !important;
+    box-sizing: border-box !important;
+    transition: all 0.2s ease !important;
+    background: #fff !important;
+    height: auto !important;
+    line-height: normal !important;
 }
 
 .uic-input::placeholder,
@@ -61,37 +78,62 @@ select.uic-input {
 }
 
 /* intl-tel-input library styles override */
+.elementor-shortcode .iti,
+.uic-form .iti,
 .iti {
-    width: 100%;
-    display: block;
+    width: 100% !important;
+    display: block !important;
+    position: relative !important;
 }
 
+.elementor-shortcode .iti__input,
+.uic-form .iti__input,
 .iti__input {
-    width: 100%;
+    width: 100% !important;
     padding: 18px 20px;
-    border: 1px solid #000;
-    border-radius: 12px;
-    font-size: 15px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    box-sizing: border-box;
-    transition: all 0.2s ease;
-    background: #fff;
+    padding-left: 80px !important;
+    border: 1px solid #000 !important;
+    border-radius: 12px !important;
+    font-size: 15px !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif !important;
+    box-sizing: border-box !important;
+    transition: all 0.2s ease !important;
+    background: #fff !important;
+    height: auto !important;
+    line-height: normal !important;
 }
 
+.elementor-shortcode .iti__input:focus,
+.uic-form .iti__input:focus,
 .iti__input:focus {
-    outline: none;
-    border-color: #000;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    outline: none !important;
+    border-color: #000 !important;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05) !important;
 }
 
 .iti__country-list {
-    border-radius: 8px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
-    border: 1px solid #000;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid #000 !important;
+    z-index: 99999 !important;
 }
 
 .iti__flag-container {
-    padding-right: 8px;
+    padding-right: 8px !important;
+}
+
+.elementor-shortcode .iti__selected-country,
+.uic-form .iti__selected-country,
+.iti__selected-country {
+    padding: 0 8px 0 12px !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+.elementor-shortcode .iti__selected-dial-code,
+.uic-form .iti__selected-dial-code,
+.iti__selected-dial-code {
+    display: none !important;
 }
 
 .uic-input:focus,
@@ -118,34 +160,42 @@ select.uic-input {
     min-height: 100px;
 }
 
+.elementor-shortcode .uic-submit-button,
 .uic-submit-button {
-    width: auto;
-    padding: 16px 32px;
-    background: linear-gradient(135deg, #d946ef 0%, #9333ea 100%);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin: 24px auto 0;
-    box-shadow: 0 4px 14px rgba(217, 70, 239, 0.4);
+    width: auto !important;
+    padding: 16px 32px !important;
+    background: linear-gradient(135deg, #d946ef 0%, #9333ea 100%) !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    margin: 24px auto 0 !important;
+    box-shadow: 0 4px 14px rgba(217, 70, 239, 0.4) !important;
+    height: auto !important;
+    line-height: normal !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
 }
 
+.elementor-shortcode .uic-submit-button:hover,
 .uic-submit-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(217, 70, 239, 0.5);
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(217, 70, 239, 0.5) !important;
+    background: linear-gradient(135deg, #d946ef 0%, #9333ea 100%) !important;
 }
 
+.elementor-shortcode .uic-submit-button::after,
 .uic-submit-button::after {
-    content: '→';
-    font-size: 18px;
-    font-weight: 400;
+    content: '→' !important;
+    font-size: 18px !important;
+    font-weight: 400 !important;
 }
 
 .uic-success-message {
