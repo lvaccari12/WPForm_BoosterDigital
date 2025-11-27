@@ -108,14 +108,41 @@ class User_Info_Collector {
     }
 
     /**
-     * Enqueue front-end styles
+     * Enqueue front-end styles and scripts
      */
     public function enqueue_styles() {
+        // Enqueue intl-tel-input CSS from CDN
+        wp_enqueue_style(
+            'intl-tel-input',
+            'https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.12/build/css/intlTelInput.css',
+            array(),
+            '23.0.12'
+        );
+
+        // Enqueue plugin styles
         wp_enqueue_style(
             'uic-styles',
             UIC_PLUGIN_URL . 'assets/css/uic-styles.css',
-            array(),
+            array('intl-tel-input'),
             UIC_VERSION
+        );
+
+        // Enqueue intl-tel-input JS from CDN
+        wp_enqueue_script(
+            'intl-tel-input',
+            'https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.12/build/js/intlTelInput.min.js',
+            array(),
+            '23.0.12',
+            true
+        );
+
+        // Enqueue custom initialization script
+        wp_enqueue_script(
+            'uic-phone-input',
+            UIC_PLUGIN_URL . 'assets/js/uic-phone-input.js',
+            array('intl-tel-input'),
+            UIC_VERSION,
+            true
         );
     }
 }

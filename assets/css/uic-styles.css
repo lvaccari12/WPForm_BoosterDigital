@@ -1,12 +1,11 @@
 /* User Info Collector Form Styles */
 
 .uic-form-wrapper {
-    max-width: 600px;
-    margin: 20px 0;
-    padding: 20px;
-    background: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 0;
+    background: transparent;
+    border: none;
 }
 
 .uic-form {
@@ -14,14 +13,11 @@
 }
 
 .uic-form-field {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .uic-label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 600;
-    color: #333;
+    display: none;
 }
 
 .uic-required {
@@ -37,28 +33,76 @@
 .uic-input,
 .uic-textarea {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    font-size: 14px;
-    font-family: inherit;
+    padding: 18px 20px;
+    border: 1px solid #000;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     box-sizing: border-box;
-    transition: border-color 0.3s ease;
+    transition: all 0.2s ease;
+    background: #fff;
+}
+
+.uic-input::placeholder,
+.uic-textarea::placeholder,
+.uic-phone-input::placeholder {
+    color: #6b7280;
+    opacity: 1;
 }
 
 select.uic-input {
     background: #fff;
     cursor: pointer;
-    appearance: auto;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    padding-right: 45px;
+}
+
+/* intl-tel-input library styles override */
+.iti {
+    width: 100%;
+    display: block;
+}
+
+.iti__input {
+    width: 100%;
+    padding: 18px 20px;
+    border: 1px solid #000;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+    background: #fff;
+}
+
+.iti__input:focus {
+    outline: none;
+    border-color: #000;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.iti__country-list {
+    border-radius: 8px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+    border: 1px solid #000;
+}
+
+.iti__flag-container {
+    padding-right: 8px;
 }
 
 .uic-input:focus,
 .uic-textarea:focus {
     outline: none;
-    border-color: #0073aa;
+    border-color: #000;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
 }
 
-.uic-input-error {
+.uic-input-error,
+.iti__input.uic-input-error {
     border-color: #d00;
 }
 
@@ -75,25 +119,40 @@ select.uic-input {
 }
 
 .uic-submit-button {
-    padding: 12px 30px;
-    background: #0073aa;
+    width: auto;
+    padding: 16px 32px;
+    background: linear-gradient(135deg, #d946ef 0%, #9333ea 100%);
     color: #fff;
     border: none;
-    border-radius: 3px;
+    border-radius: 12px;
     font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 24px auto 0;
+    box-shadow: 0 4px 14px rgba(217, 70, 239, 0.4);
 }
 
 .uic-submit-button:hover {
-    background: #005a87;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(217, 70, 239, 0.5);
+}
+
+.uic-submit-button::after {
+    content: '→';
+    font-size: 18px;
+    font-weight: 400;
 }
 
 .uic-success-message {
-    padding: 15px;
+    padding: 18px 20px;
     background: #d4edda;
     border: 1px solid #c3e6cb;
-    border-radius: 5px;
+    border-radius: 12px;
     color: #155724;
     margin: 20px 0;
 }
@@ -104,10 +163,10 @@ select.uic-input {
 }
 
 .uic-error-message {
-    padding: 15px;
+    padding: 18px 20px;
     background: #f8d7da;
     border: 1px solid #f5c6cb;
-    border-radius: 5px;
+    border-radius: 12px;
     color: #721c24;
     margin-bottom: 20px;
 }
@@ -128,7 +187,8 @@ select.uic-input {
 /* Responsive adjustments */
 @media (max-width: 600px) {
     .uic-form-wrapper {
-        padding: 15px;
+        padding: 0 15px;
+        max-width: 100%;
     }
 
     .uic-submit-button {

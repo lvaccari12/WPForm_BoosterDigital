@@ -69,6 +69,7 @@ class UIC_CPT {
     public static function create_submission($data) {
         // Sanitize all data
         $full_name = sanitize_text_field($data['full_name']);
+        $country_code = sanitize_text_field($data['country_code']);
         $telephone = sanitize_text_field($data['telephone']);
         $email = sanitize_email($data['email']);
         $business_niche = sanitize_text_field($data['business_niche']);
@@ -91,6 +92,7 @@ class UIC_CPT {
 
         // Add meta data
         update_post_meta($post_id, '_uic_full_name', $full_name);
+        update_post_meta($post_id, '_uic_country_code', $country_code);
         update_post_meta($post_id, '_uic_telephone', $telephone);
         update_post_meta($post_id, '_uic_email', $email);
         update_post_meta($post_id, '_uic_business_niche', $business_niche);
@@ -110,6 +112,7 @@ class UIC_CPT {
         return array(
             'id'             => $post_id,
             'full_name'      => get_post_meta($post_id, '_uic_full_name', true),
+            'country_code'   => get_post_meta($post_id, '_uic_country_code', true),
             'telephone'      => get_post_meta($post_id, '_uic_telephone', true),
             'email'          => get_post_meta($post_id, '_uic_email', true),
             'business_niche' => get_post_meta($post_id, '_uic_business_niche', true),

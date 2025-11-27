@@ -41,9 +41,14 @@ class UIC_Shortcode {
         }
 
         // Get and sanitize form data
+        // Use full international number from intl-tel-input if available
+        $full_telephone = isset($_POST['uic_full_telephone']) ? sanitize_text_field($_POST['uic_full_telephone']) : '';
+        $telephone_display = isset($_POST['uic_telephone']) ? sanitize_text_field($_POST['uic_telephone']) : '';
+
         $submitted_data = array(
             'full_name'      => isset($_POST['uic_full_name']) ? sanitize_text_field($_POST['uic_full_name']) : '',
-            'telephone'      => isset($_POST['uic_telephone']) ? sanitize_text_field($_POST['uic_telephone']) : '',
+            'country_code'   => isset($_POST['uic_country_code']) ? sanitize_text_field($_POST['uic_country_code']) : '',
+            'telephone'      => !empty($full_telephone) ? $full_telephone : $telephone_display,
             'email'          => isset($_POST['uic_email']) ? sanitize_email($_POST['uic_email']) : '',
             'business_niche' => isset($_POST['uic_business_niche']) ? sanitize_text_field($_POST['uic_business_niche']) : '',
         );
@@ -110,6 +115,49 @@ class UIC_Shortcode {
     }
 
     /**
+     * Get available country codes with flags
+     */
+    private function get_country_codes() {
+        return array(
+            array('code' => '+1', 'country' => 'US', 'name' => 'United States'),
+            array('code' => '+1', 'country' => 'CA', 'name' => 'Canada'),
+            array('code' => '+44', 'country' => 'GB', 'name' => 'United Kingdom'),
+            array('code' => '+61', 'country' => 'AU', 'name' => 'Australia'),
+            array('code' => '+91', 'country' => 'IN', 'name' => 'India'),
+            array('code' => '+81', 'country' => 'JP', 'name' => 'Japan'),
+            array('code' => '+49', 'country' => 'DE', 'name' => 'Germany'),
+            array('code' => '+33', 'country' => 'FR', 'name' => 'France'),
+            array('code' => '+39', 'country' => 'IT', 'name' => 'Italy'),
+            array('code' => '+34', 'country' => 'ES', 'name' => 'Spain'),
+            array('code' => '+86', 'country' => 'CN', 'name' => 'China'),
+            array('code' => '+52', 'country' => 'MX', 'name' => 'Mexico'),
+            array('code' => '+55', 'country' => 'BR', 'name' => 'Brazil'),
+            array('code' => '+27', 'country' => 'ZA', 'name' => 'South Africa'),
+            array('code' => '+31', 'country' => 'NL', 'name' => 'Netherlands'),
+            array('code' => '+46', 'country' => 'SE', 'name' => 'Sweden'),
+            array('code' => '+41', 'country' => 'CH', 'name' => 'Switzerland'),
+            array('code' => '+47', 'country' => 'NO', 'name' => 'Norway'),
+            array('code' => '+45', 'country' => 'DK', 'name' => 'Denmark'),
+            array('code' => '+64', 'country' => 'NZ', 'name' => 'New Zealand'),
+        );
+    }
+
+    /**
+     * Convert country code to flag emoji
+     */
+    private function get_flag_emoji($country_code) {
+        $country_code = strtoupper($country_code);
+        $offset = 127397;
+        $flag = '';
+
+        for ($i = 0; $i < strlen($country_code); $i++) {
+            $flag .= mb_chr(ord($country_code[$i]) + $offset, 'UTF-8');
+        }
+
+        return $flag;
+    }
+
+    /**
      * Validate form data
      * Returns array of errors (empty if validation passes)
      */
@@ -121,11 +169,17 @@ class UIC_Shortcode {
             $errors['full_name'] = __('Full Name is required.', 'user-info-collector');
         }
 
-        // Validate telephone
+        // Validate country code (optional check - intl-tel-input handles this)
+        $country_code = trim($data['country_code']);
+        if (empty($country_code)) {
+            $errors['country_code'] = __('Country code is required.', 'user-info-collector');
+        }
+
+        // Validate telephone (accepts international format: +1234567890)
         $telephone = trim($data['telephone']);
         if (empty($telephone)) {
             $errors['telephone'] = __('Telephone is required.', 'user-info-collector');
-        } elseif (!preg_match('/^[0-9\s\+\(\)\-]+$/', $telephone)) {
+        } elseif (!preg_match('/^\+?[0-9\s\(\)\-]+$/', $telephone)) {
             $errors['telephone'] = __('Telephone must be a valid phone number.', 'user-info-collector');
         }
 
@@ -245,30 +299,11 @@ class UIC_Shortcode {
                         name="uic_full_name"
                         class="uic-input <?php echo isset($errors['full_name']) ? 'uic-input-error' : ''; ?>"
                         value="<?php echo isset($submitted_data['full_name']) ? esc_attr($submitted_data['full_name']) : ''; ?>"
-                        placeholder="<?php esc_attr_e('Enter your full name', 'user-info-collector'); ?>"
+                        placeholder="<?php esc_attr_e('Full Name', 'user-info-collector'); ?>"
                         required
                     />
                     <?php if (isset($errors['full_name'])): ?>
                         <span class="uic-field-error"><?php echo esc_html($errors['full_name']); ?></span>
-                    <?php endif; ?>
-                </div>
-
-                <!-- Telephone Field -->
-                <div class="uic-form-field">
-                    <label for="uic_telephone" class="uic-label">
-                        <?php esc_html_e('Telephone', 'user-info-collector'); ?> <span class="uic-required">*</span>
-                    </label>
-                    <input
-                        type="tel"
-                        id="uic_telephone"
-                        name="uic_telephone"
-                        class="uic-input <?php echo isset($errors['telephone']) ? 'uic-input-error' : ''; ?>"
-                        value="<?php echo isset($submitted_data['telephone']) ? esc_attr($submitted_data['telephone']) : ''; ?>"
-                        placeholder="<?php esc_attr_e('Enter your phone number', 'user-info-collector'); ?>"
-                        required
-                    />
-                    <?php if (isset($errors['telephone'])): ?>
-                        <span class="uic-field-error"><?php echo esc_html($errors['telephone']); ?></span>
                     <?php endif; ?>
                 </div>
 
@@ -283,11 +318,34 @@ class UIC_Shortcode {
                         name="uic_email"
                         class="uic-input <?php echo isset($errors['email']) ? 'uic-input-error' : ''; ?>"
                         value="<?php echo isset($submitted_data['email']) ? esc_attr($submitted_data['email']) : ''; ?>"
-                        placeholder="<?php esc_attr_e('Enter your email address', 'user-info-collector'); ?>"
+                        placeholder="Best@Email.com"
                         required
                     />
                     <?php if (isset($errors['email'])): ?>
                         <span class="uic-field-error"><?php echo esc_html($errors['email']); ?></span>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Telephone Field -->
+                <div class="uic-form-field">
+                    <label for="uic_telephone" class="uic-label">
+                        <?php esc_html_e('Telephone', 'user-info-collector'); ?> <span class="uic-required">*</span>
+                    </label>
+                    <input
+                        type="tel"
+                        id="uic_telephone"
+                        name="uic_telephone"
+                        class="uic-input uic-phone-input <?php echo isset($errors['telephone']) ? 'uic-input-error' : ''; ?>"
+                        value="<?php echo isset($submitted_data['telephone']) ? esc_attr($submitted_data['telephone']) : ''; ?>"
+                        placeholder="Phone Number"
+                        required
+                    />
+                    <!-- Hidden field to store the full international number -->
+                    <input type="hidden" id="uic_full_telephone" name="uic_full_telephone" value="" />
+                    <!-- Hidden field to store country code -->
+                    <input type="hidden" id="uic_country_code" name="uic_country_code" value="" />
+                    <?php if (isset($errors['telephone'])): ?>
+                        <span class="uic-field-error"><?php echo esc_html($errors['telephone']); ?></span>
                     <?php endif; ?>
                 </div>
 
@@ -302,7 +360,7 @@ class UIC_Shortcode {
                         class="uic-input <?php echo isset($errors['business_niche']) ? 'uic-input-error' : ''; ?>"
                         required
                     >
-                        <option value=""><?php esc_html_e('Select your business niche', 'user-info-collector'); ?></option>
+                        <option value=""><?php esc_html_e('Business Niche', 'user-info-collector'); ?></option>
                         <?php
                         $niches = $this->get_business_niches();
                         $selected_niche = isset($submitted_data['business_niche']) ? $submitted_data['business_niche'] : '';
@@ -321,7 +379,7 @@ class UIC_Shortcode {
                 <!-- Submit Button -->
                 <div class="uic-form-field">
                     <button type="submit" class="uic-submit-button">
-                        <?php esc_html_e('Submit', 'user-info-collector'); ?>
+                        Test Bot
                     </button>
                 </div>
             </form>
