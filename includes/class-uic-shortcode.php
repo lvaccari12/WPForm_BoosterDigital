@@ -318,7 +318,7 @@ class UIC_Shortcode {
                         name="uic_email"
                         class="uic-input <?php echo isset($errors['email']) ? 'uic-input-error' : ''; ?>"
                         value="<?php echo isset($submitted_data['email']) ? esc_attr($submitted_data['email']) : ''; ?>"
-                        placeholder="Best@Email.com"
+                        placeholder="your.best@email.com"
                         required
                     />
                     <?php if (isset($errors['email'])): ?>
