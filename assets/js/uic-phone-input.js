@@ -75,50 +75,89 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /**
  * Initialize notification dots for form fields
- * Dots hide when field is filled, show when empty
+ * Only shows dot on the first unfilled field, progressing sequentially
+ * With a 1-second delay when moving to the next field
  */
 function initNotificationDots() {
     const dots = document.querySelectorAll('.uic-notification-dot');
+    const fields = [];
+    let updateTimeout = null;
+    let lastFilledIndex = -1;
 
+    // Collect all fields with their dots
     dots.forEach(dot => {
         const fieldId = dot.getAttribute('data-field');
         const field = document.getElementById(fieldId);
 
-        if (!field) {
-            return;
-        }
-
-        // Check initial state
-        checkFieldAndToggleDot(field, dot);
-
-        // For select fields, use 'change' event
-        if (field.tagName === 'SELECT') {
-            field.addEventListener('change', function() {
-                checkFieldAndToggleDot(field, dot);
-            });
-        } else {
-            // For text/email/tel fields, use 'input' event
-            field.addEventListener('input', function() {
-                checkFieldAndToggleDot(field, dot);
-            });
-
-            // Also check on blur to ensure it captures all changes
-            field.addEventListener('blur', function() {
-                checkFieldAndToggleDot(field, dot);
-            });
+        if (field) {
+            fields.push({ field, dot });
         }
     });
-}
 
-/**
- * Check if field has value and toggle dot visibility
- */
-function checkFieldAndToggleDot(field, dot) {
-    const hasValue = field.value.trim() !== '';
+    // Function to update all dots based on current form state
+    function updateAllDots(withDelay = false) {
+        // Clear any pending timeout
+        if (updateTimeout) {
+            clearTimeout(updateTimeout);
+            updateTimeout = null;
+        }
 
-    if (hasValue) {
-        dot.classList.add('hidden');
-    } else {
-        dot.classList.remove('hidden');
+        let foundFirstEmpty = false;
+        let firstEmptyIndex = -1;
+
+        // Find the first empty field
+        fields.forEach(({ field, dot }, index) => {
+            const hasValue = field.value.trim() !== '';
+
+            if (!hasValue && !foundFirstEmpty) {
+                firstEmptyIndex = index;
+                foundFirstEmpty = true;
+            }
+        });
+
+        // Check if a field was just filled (moving forward)
+        const shouldDelay = withDelay && firstEmptyIndex > lastFilledIndex && lastFilledIndex >= 0;
+
+        if (shouldDelay) {
+            // Hide all dots immediately
+            fields.forEach(({ dot }) => {
+                dot.classList.add('hidden');
+            });
+
+            // Show the next dot after 1.0 seconds
+            updateTimeout = setTimeout(() => {
+                if (firstEmptyIndex >= 0) {
+                    fields[firstEmptyIndex].dot.classList.remove('hidden');
+                }
+                lastFilledIndex = firstEmptyIndex;
+            }, 1000);
+        } else {
+            // Immediate update (no delay)
+            fields.forEach(({ field, dot }, index) => {
+                const hasValue = field.value.trim() !== '';
+
+                if (!hasValue && index === firstEmptyIndex) {
+                    // This is the first empty field - show the dot
+                    dot.classList.remove('hidden');
+                } else {
+                    // Either field is filled or it's not the first empty field - hide the dot
+                    dot.classList.add('hidden');
+                }
+            });
+            lastFilledIndex = firstEmptyIndex;
+        }
     }
+
+    // Initial state update
+    updateAllDots(false);
+
+    // Add event listeners to all fields
+    fields.forEach(({ field }) => {
+        if (field.tagName === 'SELECT') {
+            field.addEventListener('change', () => updateAllDots(true));
+        } else {
+            field.addEventListener('input', () => updateAllDots(true));
+            field.addEventListener('blur', () => updateAllDots(true));
+        }
+    });
 };
