@@ -290,6 +290,7 @@ class UIC_Shortcode {
 
                 <!-- Full Name Field -->
                 <div class="uic-form-field">
+                    <span class="uic-notification-dot" data-field="uic_full_name"></span>
                     <label for="uic_full_name" class="uic-label">
                         <?php esc_html_e('Full Name', 'user-info-collector'); ?> <span class="uic-required">*</span>
                     </label>
@@ -309,6 +310,7 @@ class UIC_Shortcode {
 
                 <!-- Email Field -->
                 <div class="uic-form-field">
+                    <span class="uic-notification-dot" data-field="uic_email"></span>
                     <label for="uic_email" class="uic-label">
                         <?php esc_html_e('Email', 'user-info-collector'); ?> <span class="uic-required">*</span>
                     </label>
@@ -328,6 +330,7 @@ class UIC_Shortcode {
 
                 <!-- Telephone Field -->
                 <div class="uic-form-field">
+                    <span class="uic-notification-dot" data-field="uic_telephone"></span>
                     <label for="uic_telephone" class="uic-label">
                         <?php esc_html_e('Telephone', 'user-info-collector'); ?> <span class="uic-required">*</span>
                     </label>
@@ -351,6 +354,7 @@ class UIC_Shortcode {
 
                 <!-- Business Niche Field -->
                 <div class="uic-form-field">
+                    <span class="uic-notification-dot" data-field="uic_business_niche"></span>
                     <label for="uic_business_niche" class="uic-label">
                         <?php esc_html_e('Business Niche', 'user-info-collector'); ?> <span class="uic-required">*</span>
                     </label>

@@ -68,4 +68,57 @@ document.addEventListener('DOMContentLoaded', function() {
             errorSpan.remove();
         }
     });
+
+    // Notification dot functionality
+    initNotificationDots();
 });
+
+/**
+ * Initialize notification dots for form fields
+ * Dots hide when field is filled, show when empty
+ */
+function initNotificationDots() {
+    const dots = document.querySelectorAll('.uic-notification-dot');
+
+    dots.forEach(dot => {
+        const fieldId = dot.getAttribute('data-field');
+        const field = document.getElementById(fieldId);
+
+        if (!field) {
+            return;
+        }
+
+        // Check initial state
+        checkFieldAndToggleDot(field, dot);
+
+        // For select fields, use 'change' event
+        if (field.tagName === 'SELECT') {
+            field.addEventListener('change', function() {
+                checkFieldAndToggleDot(field, dot);
+            });
+        } else {
+            // For text/email/tel fields, use 'input' event
+            field.addEventListener('input', function() {
+                checkFieldAndToggleDot(field, dot);
+            });
+
+            // Also check on blur to ensure it captures all changes
+            field.addEventListener('blur', function() {
+                checkFieldAndToggleDot(field, dot);
+            });
+        }
+    });
+}
+
+/**
+ * Check if field has value and toggle dot visibility
+ */
+function checkFieldAndToggleDot(field, dot) {
+    const hasValue = field.value.trim() !== '';
+
+    if (hasValue) {
+        dot.classList.add('hidden');
+    } else {
+        dot.classList.remove('hidden');
+    }
+};
