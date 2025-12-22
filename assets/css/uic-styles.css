@@ -13,7 +13,7 @@
 /* Elementor compatibility - increase specificity */
 .elementor-shortcode .uic-form-wrapper,
 .uic-form-wrapper {
-    max-width: 400px !important;
+    max-width: 405px !important;
     margin: 40px auto !important;
     padding: 0 !important;
     background: transparent !important;
@@ -24,9 +24,9 @@
 .elementor-shortcode .uic-form,
 .uic-form {
     margin: 0 !important;
-    padding: 40px !important;
+    padding: 139px 40px 40px 40px !important;
     background-color: #ffffff;
-    border-radius: 20px;;
+    border-radius: 20px;
 }
 
 .elementor-shortcode .uic-form-field,

@@ -119,12 +119,13 @@ class User_Info_Collector {
             '23.0.12'
         );
 
-        // Enqueue plugin styles
+        // Enqueue plugin styles with auto-versioning based on file modification time
+        $css_file = UIC_PLUGIN_DIR . 'assets/css/uic-styles.css';
         wp_enqueue_style(
             'uic-styles',
             UIC_PLUGIN_URL . 'assets/css/uic-styles.css',
             array('intl-tel-input'),
-            UIC_VERSION
+            file_exists($css_file) ? filemtime($css_file) : UIC_VERSION
         );
 
         // Enqueue intl-tel-input JS from CDN
@@ -136,12 +137,13 @@ class User_Info_Collector {
             true
         );
 
-        // Enqueue custom initialization script
+        // Enqueue custom initialization script with auto-versioning
+        $js_file = UIC_PLUGIN_DIR . 'assets/js/uic-phone-input.js';
         wp_enqueue_script(
             'uic-phone-input',
             UIC_PLUGIN_URL . 'assets/js/uic-phone-input.js',
             array('intl-tel-input'),
-            UIC_VERSION,
+            file_exists($js_file) ? filemtime($js_file) : UIC_VERSION,
             true
         );
     }
