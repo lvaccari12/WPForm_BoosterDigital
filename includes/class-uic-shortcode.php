@@ -111,6 +111,7 @@ class UIC_Shortcode {
     private function get_business_niches() {
         return array(
             'Real Estate Agents & Property Managers',
+            'Painting services',
         );
     }
 
