@@ -34,6 +34,15 @@ class UIC_Admin {
 
         add_submenu_page(
             'uic-submissions',
+            __('Business Niches', 'user-info-collector'),
+            __('Business Niches', 'user-info-collector'),
+            'manage_options',
+            'uic-business-niches',
+            array($this, 'render_business_niches_page')
+        );
+
+        add_submenu_page(
+            'uic-submissions',
             __('Settings', 'user-info-collector'),
             __('Settings', 'user-info-collector'),
             'manage_options',
@@ -89,6 +98,113 @@ class UIC_Admin {
                                     <a href="<?php echo esc_url(wp_nonce_url(admin_url('admin.php?page=uic-submissions&action=delete&submission_id=' . $submission['id']), 'delete_submission_' . $submission['id'])); ?>"
                                        class="button button-small"
                                        onclick="return confirm('<?php esc_attr_e('Are you sure you want to delete this submission?', 'user-info-collector'); ?>');">
+                                        <?php esc_html_e('Delete', 'user-info-collector'); ?>
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+        </div>
+        <?php
+    }
+
+    /**
+     * Render business niches management page
+     */
+    public function render_business_niches_page() {
+        // Handle add niche action
+        if (isset($_POST['uic_add_niche']) && check_admin_referer('uic_add_niche', 'uic_add_niche_nonce')) {
+            $new_niche = sanitize_text_field($_POST['uic_new_niche']);
+
+            if (!empty($new_niche)) {
+                $niches = get_option('uic_business_niches', array());
+
+                // Check for duplicates
+                if (!in_array($new_niche, $niches)) {
+                    $niches[] = $new_niche;
+                    update_option('uic_business_niches', $niches);
+                    echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Business niche added successfully.', 'user-info-collector') . '</p></div>';
+                } else {
+                    echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__('This business niche already exists.', 'user-info-collector') . '</p></div>';
+                }
+            } else {
+                echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__('Please enter a business niche name.', 'user-info-collector') . '</p></div>';
+            }
+        }
+
+        // Handle delete niche action
+        if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['niche']) && isset($_GET['_wpnonce'])) {
+            if (wp_verify_nonce($_GET['_wpnonce'], 'delete_niche_' . $_GET['niche'])) {
+                $niches = get_option('uic_business_niches', array());
+                $niche_to_delete = sanitize_text_field($_GET['niche']);
+
+                $key = array_search($niche_to_delete, $niches);
+                if ($key !== false) {
+                    unset($niches[$key]);
+                    $niches = array_values($niches); // Re-index array
+                    update_option('uic_business_niches', $niches);
+                    echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Business niche deleted successfully.', 'user-info-collector') . '</p></div>';
+                }
+            }
+        }
+
+        $niches = get_option('uic_business_niches', array());
+
+        ?>
+        <div class="wrap">
+            <h1><?php esc_html_e('Business Niches', 'user-info-collector'); ?></h1>
+            <p><?php esc_html_e('Manage the business niche options that appear in your form dropdown.', 'user-info-collector'); ?></p>
+
+            <div style="background: #fff; padding: 20px; margin: 20px 0; border: 1px solid #ccc; border-radius: 4px;">
+                <h2><?php esc_html_e('Add New Business Niche', 'user-info-collector'); ?></h2>
+                <form method="post" action="">
+                    <?php wp_nonce_field('uic_add_niche', 'uic_add_niche_nonce'); ?>
+                    <table class="form-table">
+                        <tr>
+                            <th scope="row">
+                                <label for="uic_new_niche"><?php esc_html_e('Business Niche Name', 'user-info-collector'); ?></label>
+                            </th>
+                            <td>
+                                <input type="text"
+                                       id="uic_new_niche"
+                                       name="uic_new_niche"
+                                       class="regular-text"
+                                       placeholder="<?php esc_attr_e('e.g., Real Estate Agents', 'user-info-collector'); ?>" />
+                            </td>
+                        </tr>
+                    </table>
+                    <p class="submit">
+                        <button type="submit" name="uic_add_niche" class="button button-primary">
+                            <?php esc_html_e('Add Business Niche', 'user-info-collector'); ?>
+                        </button>
+                    </p>
+                </form>
+            </div>
+
+            <h2><?php esc_html_e('Current Business Niches', 'user-info-collector'); ?></h2>
+
+            <?php if (empty($niches)): ?>
+                <p><?php esc_html_e('No business niches configured yet.', 'user-info-collector'); ?></p>
+            <?php else: ?>
+                <table class="wp-list-table widefat fixed striped">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;"><?php esc_html_e('#', 'user-info-collector'); ?></th>
+                            <th><?php esc_html_e('Business Niche', 'user-info-collector'); ?></th>
+                            <th style="width: 150px;"><?php esc_html_e('Actions', 'user-info-collector'); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($niches as $index => $niche): ?>
+                            <tr>
+                                <td><?php echo esc_html($index + 1); ?></td>
+                                <td><strong><?php echo esc_html($niche); ?></strong></td>
+                                <td>
+                                    <a href="<?php echo esc_url(wp_nonce_url(admin_url('admin.php?page=uic-business-niches&action=delete&niche=' . urlencode($niche)), 'delete_niche_' . $niche)); ?>"
+                                       class="button button-small"
+                                       onclick="return confirm('<?php esc_attr_e('Are you sure you want to delete this business niche?', 'user-info-collector'); ?>');">
                                         <?php esc_html_e('Delete', 'user-info-collector'); ?>
                                     </a>
                                 </td>

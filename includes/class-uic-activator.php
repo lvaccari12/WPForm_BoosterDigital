@@ -28,5 +28,14 @@ class UIC_Activator {
         if (false === get_option('uic_notification_email')) {
             add_option('uic_notification_email', get_option('admin_email'));
         }
+
+        // Set default business niches if not already set
+        if (false === get_option('uic_business_niches')) {
+            $default_niches = array(
+                'Real Estate Agents & Property Managers',
+                'Painting services',
+            );
+            add_option('uic_business_niches', $default_niches);
+        }
     }
 }

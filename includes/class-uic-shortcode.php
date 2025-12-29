@@ -109,10 +109,13 @@ class UIC_Shortcode {
      * Get available business niches
      */
     private function get_business_niches() {
-        return array(
+        // Get niches from options, fallback to default if not set
+        $niches = get_option('uic_business_niches', array(
             'Real Estate Agents & Property Managers',
             'Painting services',
-        );
+        ));
+
+        return $niches;
     }
 
     /**
